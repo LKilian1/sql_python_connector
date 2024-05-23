@@ -1,4 +1,5 @@
 # Virtuelle Umgebungen
+.venv/
 venv/
 
 # Byte-compiled / optimierte / andere Python-Dateien
