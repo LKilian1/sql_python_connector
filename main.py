@@ -1,32 +1,76 @@
 import pathlib
 import csv
+import pymysql
+import pandas as pd
 
-dir = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023'
+# Verbindung zu MariaDB-Datenbank aufbauen
+def connect_to_db():
+    return pymysql.connect(
+        host = '141.57.28.240',
+        user = 'root',
+        password = 'dreyertech',
+        database = 'relaxo'
+    )
 
-for path in pathlib.Path(dir).rglob('*.csv'):
-    p = str(path).split('/')
-    if "TEMP" in p[-2]:
+# Tabellenstruktur basierend auf CSV-Headern erstellen
+def create_table_from_csv(cursor, table_name, headers):
+        columns = ', '.join([f"'{header}' FLOAT" for header in headers])
+        create_table_query = f"CREATE TABLE IF NOT EXISTS '{table_name}'({columns});"
+        cursor.execute(create_table_query)
+    
 
-        with open(path) as csvfile:
-            # Feste Variablen
-            messgeraet_id = 1
-            # Aus Dateiname
-            stab_id = p[-1][4:5]
-            dauer = 'unknown'
-            if "OPEN" in p[-3]:
-                s = p[-1].split('_')
-                dauer = s[-1]
-            # Aus Datei
-            row = csvfile.readline().split(';')
-            timestamp = row[0]
-            temp = row[1]
-            volt = p[-2].split('_')[2]
-            # Read some file
-            spamreader = csv.reader(csvfile, delimiter=';')
-            headers = next(spamreader)
-            d = {}
-            for row in spamreader:
-                for i in range(len(headers)):
-                    d[headers[i]] = row[i]
-                print(d)
-                Zeilenweise in Datenbank laden
+# Daten in die Tabelle einfügen
+def insert_data_into_table(cursor, table_name, data):
+    placeholders = ', '.join(['%s'] * len(data))
+    columns = ', '.join([f"'{col}" for col in data.keys()])
+    insert_query = f"INSERT INTO '{table_name}' ({columns}) VALUES ({placeholders})"
+    cursor.execute(insert_query, list(data.values()))
+
+# CSV Dateien verarbeiten
+def process_csv_files():
+    dir = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023'
+
+    # Verbindung zur Datenbank herstellen
+    connection = connect_to_db()
+    cursor = connection.cursor()
+
+    for path in pathlib.Path(dir).rglob('*.csv'):
+        p = str(path).split('/')
+        if "TEMP" in p[-2]:
+            with open(path) as csvfile:
+                # Feste Variablen
+                messgeraet_id = 1
+                # Aus Dateiname
+                stab_id = p[-1][4:5]
+                dauer = 'unknown'
+                if "OPEN" in p[-3]:
+                    s = p[-1].split('_')
+                    dauer = s[-1]
+                # Aus Datei
+                row = csvfile.readline().split(';')
+                timestamp = row[0]
+                temp = row[1]
+                volt = p[-2].split('_')[2]
+                # CSV Header und Daten lesen
+                spamreader = csv.reader(csvfile, delimiter=';')
+                headers = next(spamreader)
+                # Tabellenname aus Dateiname ableiten
+                table_name = f"{p[-2]}_{stab_id}_{volt}"
+                # Tabelle erstellen 
+                create_table_from_csv(cursor, table_name, headers)
+
+                # Daten zeilenweise einfügen
+                for row in spamreader:
+                    data = {headers[i]: float(row[i]) for i in range(len(headers))}
+                    insert_data_into_table(cursor, table_name, data)
+                    print(data)
+
+    # Änderungen speichern und Verbindung schließen
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# Hauptprogramm ausführen 
+if __name__ == "__main__":
+    process_csv_files()
