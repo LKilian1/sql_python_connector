@@ -4,9 +4,9 @@ def test_connection():
     try:
         connection = pymysql.connect(
             host='141.57.28.240',
-            user='your_username',
-            password='your_password',
-            database='your_database',
+            user='python',
+            password='dreyertech',
+            database='relaxo',
             port=3306
         )
         print("Verbindung erfolgreich!")

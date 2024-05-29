@@ -9,14 +9,21 @@ def connect_to_db():
         host = '141.57.28.240',
         user = 'root',
         password = 'dreyertech',
-        database = 'relaxo'
+        database = 'test'
     )
+
+# Maximalen Wert der 'messreihe_id' ermittlen und inkrementieren
+def get_next_messreihe_id(cursor):
+    cursor.execute("SELECT MAX(messreihe_id) FROM messreihe;")
+    result = cursor.fetchone()
+    max_id = result[0] if result[0] is not None else 0
+    return max_id + 1
 
 # Tabellenstruktur basierend auf CSV-Headern erstellen
 def create_table_from_csv(cursor, table_name, headers):
-        columns = ', '.join([f"'{header}' FLOAT" for header in headers])
-        create_table_query = f"CREATE TABLE IF NOT EXISTS '{table_name}'({columns});"
-        cursor.execute(create_table_query)
+    columns = ', '.join([f"'{header}' FLOAT" for header in headers])
+    create_table_query = f"CREATE TABLE IF NOT EXISTS '{table_name}'({columns});"
+    cursor.execute(create_table_query)
     
 
 # Daten in die Tabelle einfügen
@@ -33,6 +40,9 @@ def process_csv_files():
     # Verbindung zur Datenbank herstellen
     connection = connect_to_db()
     cursor = connection.cursor()
+
+    # Maximalen Wert der 'messreihe_id' ermittlen und inkrementieren
+    messreihe_id = get_next_messreihe_id(cursor)
 
     for path in pathlib.Path(dir).rglob('*.csv'):
         p = str(path).split('/')
@@ -61,6 +71,7 @@ def process_csv_files():
 
                 # Daten zeilenweise einfügen
                 for row in spamreader:
+                    data = {'messreihe_id': messreihe_id}
                     data = {headers[i]: float(row[i]) for i in range(len(headers))}
                     insert_data_into_table(cursor, table_name, data)
                     print(data)
