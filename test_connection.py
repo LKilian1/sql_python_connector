@@ -6,7 +6,7 @@ def test_connection():
             host='141.57.28.240',
             user='python',
             password='dreyertech',
-            database='relaxo',
+            database='test',
             port=3306
         )
         print("Verbindung erfolgreich!")
