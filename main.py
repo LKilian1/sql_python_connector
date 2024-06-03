@@ -5,11 +5,12 @@ import pandas as pd
 
 # Verbindung zu MariaDB-Datenbank aufbauen
 def connect_to_db():
-    return pymysql.connect(
+    connection = pymysql.connect(
         host = '141.57.28.240',
-        user = 'root',
+        user = 'python',
         password = 'dreyertech',
-        database = 'test'
+        database = 'test',
+        port = 3306
     )
 
 # Maximalen Wert der 'messreihe_id' ermittlen und inkrementieren
