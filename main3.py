@@ -9,9 +9,17 @@ def connect_to_db():
             host='141.57.28.240',
             user='python',
             password='dreyertech',
-            database='test',
-            port = 3306
+            database='relaxo',
+            port=3306
         )
+        # Verbindungstest
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+            if result:
+                print("Database connection successful.")
+            else:
+                print("Database connection failed.")
         return connection
     except pymysql.MySQLError as e:
         print(f"Error connecting to the database: {e}")
@@ -26,26 +34,28 @@ def get_next_messreihe_id(cursor):
 
 # Tabellenstruktur basierend auf CSV-Headern erstellen
 def create_table_from_csv(cursor, table_name, headers):
-    columns = ', '.join([f"`{header}` FLOAT" for header in headers])
-    create_table_query = f"CREATE TABLE IF NOT EXISTS `{table_name}` ({columns});"
+    extra_columns = "`messreihe_id` INT, `stab_id` INT, `dauer` VARCHAR(255), `timestamp` VARCHAR(255), `temp` FLOAT, `volt` FLOAT"
+    csv_columns = ', '.join([f"`{header}` FLOAT" for header in headers])
+    create_table_query = f"CREATE TABLE IF NOT EXISTS `{table_name}` ({extra_columns}, {csv_columns});"
+    print(create_table_query)  # Debug-Ausgabe des erstellten SQL-Befehls
     cursor.execute(create_table_query)
-
 
 # Daten in die Tabelle einfügen
 def insert_data_into_table(cursor, table_name, data):
     placeholders = ', '.join(['%s'] * len(data))
-    columns = ', '.join([f"'{col}" for col in data.keys()])
-    insert_query = f"INSERT INTO '{table_name}' ({columns}) VALUES ({placeholders})"
+    columns = ', '.join([f"`{col}`" for col in data.keys()])
+    insert_query = f"INSERT INTO `{table_name}` ({columns}) VALUES ({placeholders})"
+    print(insert_query)  # Debug-Ausgabe der Insert-Query
+    print(list(data.values()))  # Debug-Ausgabe der Werte
     cursor.execute(insert_query, list(data.values()))
 
-# CSV Dateien verarbeiten
+# CSV-Dateien verarbeiten
 def process_csv_files():
     dir = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023'
 
     # Verbindung zur Datenbank herstellen
     connection = connect_to_db()
     if connection is None:
-        print("Failed to connect to the database.")
         return
 
     cursor = connection.cursor()
@@ -60,7 +70,7 @@ def process_csv_files():
                 # Feste Variablen
                 messgeraet_id = 1
                 # Aus Dateiname
-                stab_id = p[-1][4:5]
+                stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
                 dauer = 'unknown'
                 if "OPEN" in p[-3]:
                     s = p[-1].split('_')
@@ -69,22 +79,29 @@ def process_csv_files():
                 row = csvfile.readline().split(';')
                 timestamp = row[0]
                 temp = row[1]
-                volt = p[-2].split('_')[2]
+                volt = int(p[-2].split('_')[2].removesuffix('V'))
                 # CSV Header und Daten lesen
                 spamreader = csv.reader(csvfile, delimiter=';')
                 headers = next(spamreader)
                 # Tabellenname aus Dateiname ableiten
-                table_name = f"{p[-2]}_{stab_id}_{volt}"
+                table_name = f"{p[-2]}_{stab_id}"
                 # Tabelle erstellen
                 create_table_from_csv(cursor, table_name, headers)
 
                 # Daten zeilenweise einfügen
                 for row in spamreader:
-                    data = {'messreihe_id': messreihe_id}
-                    data = {headers[i]: float(row[i]) for i in range(len(headers))}
+                    data = {
+                        'messreihe_id': messreihe_id,
+                        'stab_id': stab_id,
+                        'dauer': dauer,
+                        'timestamp': timestamp,
+                        'temp': temp,
+                        'volt': volt
+                    }
+                    data.update({headers[i]: float(row[i]) for i in range(len(headers))})
                     insert_data_into_table(cursor, table_name, data)
                     print(data)
-
+                break
     # Änderungen speichern und Verbindung schließen
     connection.commit()
     cursor.close()
