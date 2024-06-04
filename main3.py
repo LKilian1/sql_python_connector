@@ -71,10 +71,6 @@ def process_csv_files():
                 messgeraet_id = 1
                 # Aus Dateiname
                 stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
-                dauer = 'unknown'
-                if "OPEN" in p[-3]:
-                    s = p[-1].split('_')
-                    dauer = s[-1]
                 # Aus Datei
                 row = csvfile.readline().split(';')
                 timestamp = row[0]
@@ -84,16 +80,16 @@ def process_csv_files():
                 spamreader = csv.reader(csvfile, delimiter=';')
                 headers = next(spamreader)
                 # Tabellenname aus Dateiname ableiten
-                table_name = f"{p[-2]}_{stab_id}"
+                table_name = f"{p[-2]}_{stab_id}_8"
                 # Tabelle erstellen
                 create_table_from_csv(cursor, table_name, headers)
 
                 # Daten zeilenweise einfügen
                 for row in spamreader:
                     data = {
-                        'messreihe_id': messreihe_id,
                         'stab_id': stab_id,
-                        'dauer': dauer,
+                        'messgeraet_id': messgeraet_id,
+                        'messreihe_id': messreihe_id,
                         'timestamp': timestamp,
                         'temp': temp,
                         'volt': volt
