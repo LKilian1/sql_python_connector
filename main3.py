@@ -34,7 +34,7 @@ def get_next_messreihe_id(cursor):
 
 # Tabellenstruktur basierend auf CSV-Headern erstellen
 def create_table_from_csv(cursor, table_name, headers):
-    extra_columns = "`messreihe_id` INT, `stab_id` INT, `dauer` VARCHAR(255), `timestamp` VARCHAR(255), `temp` FLOAT, `volt` FLOAT"
+    extra_columns = "`stab_id` INT, `messgeraet_id` INT, `messreihe_id` INT, `timestamp` VARCHAR(255), `temp` FLOAT, `volt` FLOAT"
     csv_columns = ', '.join([f"`{header}` FLOAT" for header in headers])
     create_table_query = f"CREATE TABLE IF NOT EXISTS `{table_name}` ({extra_columns}, {csv_columns});"
     print(create_table_query)  # Debug-Ausgabe des erstellten SQL-Befehls
