@@ -9,7 +9,7 @@ def connect_to_db():
             host='141.57.28.240',
             user='python',
             password='dreyertech',
-            database='hamid',
+            database='relaxo',
             port=3306
         )
         # Verbindungstest
@@ -34,7 +34,7 @@ def get_next_messreihe_id(cursor):
 
 # Tabellenstruktur basierend auf CSV-Headern erstellen
 def create_table_from_csv(cursor, table_name, headers):
-    extra_columns = "`timestamp` VARCHAR(255), `stab_id` INT,`messgeraet_id` INT, `messreihe_id` INT, `temp` FLOAT, `volt` FLOAT"
+    extra_columns = "`stab_id` INT, `messgeraet_id` INT, `messreihe_id` INT, `timestamp` VARCHAR(255), `temp` FLOAT, `volt` FLOAT"
     csv_columns = ', '.join([f"`{header}` FLOAT" for header in headers])
     create_table_query = f"CREATE TABLE IF NOT EXISTS `{table_name}` ({extra_columns}, {csv_columns});"
     print(create_table_query)  # Debug-Ausgabe des erstellten SQL-Befehls
@@ -60,6 +60,8 @@ def process_csv_files():
 
     cursor = connection.cursor()
 
+    # Maximalen Wert der 'messreihe_id' ermitteln und inkrementieren
+    messreihe_id = get_next_messreihe_id(cursor)
 
     for path in pathlib.Path(dir).rglob('*.csv'):
         p = str(path).split('/')
@@ -69,12 +71,6 @@ def process_csv_files():
                 messgeraet_id = 1
                 # Aus Dateiname
                 stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
-                dauer = 'unknown'
-                if "OPEN" in p[-3]:
-                    s = p[-1].split('_')
-                    dauer = s[-1]
-                # Maximalen Wert der 'messreihe_id' ermitteln und inkrementieren
-                messreihe_id = get_next_messreihe_id(cursor)
                 # Aus Datei
                 row = csvfile.readline().split(';')
                 timestamp = row[0]
@@ -84,16 +80,16 @@ def process_csv_files():
                 spamreader = csv.reader(csvfile, delimiter=';')
                 headers = next(spamreader)
                 # Tabellenname aus Dateiname ableiten
-                table_name = f"{p[-2]}_{stab_id}"
+                table_name = f"{p[-2]}_{stab_id}_8"
                 # Tabelle erstellen
                 create_table_from_csv(cursor, table_name, headers)
 
                 # Daten zeilenweise einfügen
                 for row in spamreader:
                     data = {
-                        'messreihe_id': messreihe_id,
-                        'messgeraet_id': messgeraet_id,
                         'stab_id': stab_id,
+                        'messgeraet_id': messgeraet_id,
+                        'messreihe_id': messreihe_id,
                         'timestamp': timestamp,
                         'temp': temp,
                         'volt': volt
@@ -101,8 +97,7 @@ def process_csv_files():
                     data.update({headers[i]: float(row[i]) for i in range(len(headers))})
                     insert_data_into_table(cursor, table_name, data)
                     print(data)
-                
-                
+                break
     # Änderungen speichern und Verbindung schließen
     connection.commit()
     cursor.close()
