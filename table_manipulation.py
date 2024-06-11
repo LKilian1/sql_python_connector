@@ -19,7 +19,7 @@ timestamps = [initial_timestamp + i * 10 for i in range(len(data))]
 data.insert(0, 'timestamp', timestamps)
 
 # Die Daten in eine neue CSV-Datei speichern
-output_path = '/home/kilian/Documents/Python_Project/Stab04_1_1000_1000_09_12_2023__16_39_40_modified_data.csv'
+output_path = '/home/kilian/Documents/Python_Project/Stab04_1_1000_1000_09_12_2023__16_39_40_modified_data2.csv'
 data.to_csv(output_path, index=False)
 
 print(f'Die modifizierte Datei wurde erfolgreich unter {output_path} gespeichert.')

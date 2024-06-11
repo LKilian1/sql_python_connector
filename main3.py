@@ -60,6 +60,7 @@ def process_csv_files():
 
     cursor = connection.cursor()
 
+    messreihe_id = get_next_messreihe_id(cursor)
 
     for path in pathlib.Path(dir).rglob('*.csv'):
         p = str(path).split('/')
@@ -69,12 +70,14 @@ def process_csv_files():
                 messgeraet_id = 1
                 # Aus Dateiname
                 stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
+                print(stab_id)
+                exit(0)
                 dauer = 'unknown'
                 if "OPEN" in p[-3]:
                     s = p[-1].split('_')
                     dauer = s[-1]
                 # Maximalen Wert der 'messreihe_id' ermitteln und inkrementieren
-                messreihe_id = get_next_messreihe_id(cursor)
+                messreihe_id = messreihe_id + 1
                 # Aus Datei
                 row = csvfile.readline().split(';')
                 timestamp = row[0]
