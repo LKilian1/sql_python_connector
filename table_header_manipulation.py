@@ -18,6 +18,7 @@ def process_csv_files():
 
             timestamp = timestamp.replace('-', '').replace(' ', '').replace(':', '')[:12]
             initial_timestamp = int(timestamp)
+
             stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
 
             temperatur = float(temperatur)
@@ -26,8 +27,7 @@ def process_csv_files():
 
             # CSV DAtei einlesen und erste Zeile überspringen
             df = pd.read_csv(path, skiprows=1)
-            print(df.columns[0])
-            exit(0)
+
             # Spalten aus der Zeile 1 an den Tabellenheader hängen
             timestamps = [initial_timestamp + i*10 for i in range(len(df))]
             df.insert(0, 'timestamp', timestamps)
@@ -36,7 +36,7 @@ def process_csv_files():
 
 
             # Speichern der modifizierten Tabellenheaders
-            output_path = f"/home/kilian/Documents/Python_Project/{p[-2]}_stab_{stab_id}.csv"
+            output_path = f"/home/kilian/Documents/Python_Project/CSV/{p[-2]}_stab_{stab_id}.csv"
             df.to_csv(output_path, index=False)
             
 
