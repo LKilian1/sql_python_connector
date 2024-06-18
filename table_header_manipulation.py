@@ -14,7 +14,7 @@ def process_csv_files():
                 first_line = csvfile.readline().strip()
             
             # 'timestamp', 'temperatur', 'spannung' extrahieren -> string manipulation
-            timestamp, temperatur, spannung = first_line.split(';')[:3]
+            timestamp, temperatur, u = first_line.split(';')[:3]
 
             timestamp = timestamp.replace('-', '').replace(' ', '').replace(':', '')[:12]
             initial_timestamp = int(timestamp)
@@ -22,7 +22,7 @@ def process_csv_files():
             stab_id = int(p[-1].split('_')[0].removeprefix('Stab'))
 
             temperatur = float(temperatur)
-            spannung = float(spannung)
+            u = float(u)
 
 
             # CSV DAtei einlesen und erste Zeile überspringen
@@ -32,7 +32,7 @@ def process_csv_files():
             timestamps = [initial_timestamp + i*10 for i in range(len(df))]
             df.insert(0, 'timestamp', timestamps)
             df.insert(1, 'temperatur', temperatur)
-            df.insert(2, 'spannung', spannung)
+            df.insert(2, 'u', u)
 
 
             # Speichern der modifizierten Tabellenheaders

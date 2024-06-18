@@ -1,0 +1,118 @@
+import pymysql 
+
+con = pymysql.connect(
+    host='141.57.28.240',
+    user='python',
+    password='dreyertech',
+    db='test',
+    port=3306
+)
+
+
+def menu():
+    print("1. view data")
+    print("2. add data")
+    print("3. update data")
+    print("4. update data")
+    print("5. delete data")
+    print("6. exit database")
+
+
+def view_data():
+    cursor = con.cursor()
+    query = "Select * from mhs"
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    if cursor.rowcount < 0:
+        print("data not found")
+    else:
+        for data in result:
+            print(data)
+
+
+def add_data():
+    print("To add data, please fill out the form below")
+    name = int(input("Enter your name: "))
+    last_name = input("Enter your last name: ")
+    major = input("Enter your major: ")
+    address = input("Enter your address: ")
+    val = (name, last_name, major, address)
+
+    cursor = con.cursor()
+    query = "INSERT INTO mhs (name, last_name, major, address) values (%s, %s, %s, %s)"
+    cursor.execute(query, val)
+    con.commit()
+    print("{} data successful input ".format(cursor.rowcount))
+
+
+def update_data():
+    cursor = con.cursor()
+    view_data()
+    print("Update the data in the form below")
+    id = int(input("Enter the id: "))
+    name = int(input("Enter your new name: "))
+    last_name = input("Enter your new last name: ")
+    major = input("Enter your new major: ")
+    address = input("Enter your new address: ")
+
+    query = "UPDATE mhs SET name=%s, last_name=%s, major=%s, address=%s WHERE id=%s"
+    val = (name, last_name, major, address, id)
+    cursor.execute(query, val)
+    con.commit()
+    print("{} data successful input".format(cursor.rowcount))
+
+
+def delete_data():
+    cursor = con.cursor()
+    view_data()
+    print("To delete data, please enter your ID")
+    id = int(input("Enter the deleted data: "))
+
+    query = "DELETE FROM mhs WHERE id=%s"
+    val = (id)
+    cursor.execute(query, val)
+    con.commit()
+    print("{} data deleted successfully".format(cursor.rowcount))
+
+
+def search_data():
+    cursor = con.cursor()
+    search_term = input("Enter your search terms: ")
+
+    query ="SELECT * FROM mhs WHERE name LIKE %s OR address LIKE %s"
+    val = ("%{}%".format(search_term), "%{}%".format(search_term))
+    cursor.execute(query, val)
+    result = cursor.fetchall()
+
+    if cursor.rowcount < 0:
+        print("data not found")
+    else:
+        for data in result:
+            print(data)
+
+
+def crud():
+    menu = input("Select your menu: ")
+
+    if menu == '1':
+        view_data()
+    elif menu == '2':
+        add_data()
+    elif menu == '3':
+        update_data()
+    elif menu =='4':
+        delete_data()
+    elif menu=='5':
+        search_data()
+    elif menu == '6':
+        exit()
+    else:
+        print("Your choice is wrong!")
+
+    crud()
+
+menu()
+crud()
+
+

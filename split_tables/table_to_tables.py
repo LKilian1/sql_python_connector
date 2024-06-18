@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Pfad zur CSV-Datei
-file_path = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023/TEMP_025_0V//Stab04_1_1000_1000_09_12_2023__16_39_40.csv'
+file_path = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023/TEMP_025_0V/Stab04_1_1000_1000_09_12_2023__16_39_40.csv'
 
 # Extrahieren der relevanten IDs aus dem Dateipfad
 messreihe_id = 1  # Ersetzen Sie dies durch die tatsächliche Logik zur Inkrementierung

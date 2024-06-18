@@ -73,6 +73,10 @@ def table_to_tables():
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table1.items():
                     table1[col] = value
+                
+                # Spaltenreihenfolge für Tabelle 3 anpassen
+                new_order_table1 = [df.columns[0]] + list(additional_columns_table1.keys()) + [df.columns[1]]
+                table1 = table1[new_order_table1]
 
 
                 # Definieren der Spaltenzuordnung für die Tabellen
