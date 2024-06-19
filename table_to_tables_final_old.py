@@ -36,12 +36,7 @@ def table_to_tables():
         if 'TEMP' in p[-1]:
             with open(path, 'r') as csvfile:
                 # Lade CSV Datei
-                df = pd.read_csv(path, delimiter=';')
-                print(df.columns[0])
-                exit(0)
-
-                first_line = csvfile.readline().strip()
-                header = first_line.split(',')
+                df = pd.read_csv(path)
 
                  # Hole die aktuellen IDs
                 ids = get_current_ids()
@@ -71,39 +66,32 @@ def table_to_tables():
                 
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 1 == messung_t
-                columns_table1 = [header[0], header[1]]
-
+                columns_table1 = [df.columns[0], df.columns[1]]
+        
                 # Initialisiere Tabelle 1 mit den vorhandenen Daten aus den CSV Spalten
                 table1 = df[columns_table1].copy()
-                print(table1)
-
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table1.items():
                     table1[col] = value
                 
                 # Spaltenreihenfolge für Tabelle 3 anpassen
-                new_order_table1 = [header[0]] + list(additional_columns_table1.keys()) + [header[1]]
+                new_order_table1 = [df.columns[0]] + list(additional_columns_table1.keys()) + [df.columns[1]]
                 table1 = table1[new_order_table1]
-                print(f"Debug Tabelle 1 (messung_t): {new_order_table1}")
-                print(table1.head())
-                exit(0)
 
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 2 == messung_z
-                columns_table2 = ['timestamp'] + header[3:24]
-        
+                columns_table2 = [df.columns[0]] + df.columns[3:24].tolist()
+
                 # Initialisiere Tabelle 2 mit den vorhandenen Daten aus den CSV Spalten
                 table2 = df[columns_table2].copy()
+
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table2.items():
                     table2[col] = value
                 
                 # Spaltenreihe  nfolge für Tabelle 2 anpassen
-                new_order_table2 = ['timestamp'] + list(additional_columns_table2.keys()) + header[3:23]
+                new_order_table2 = [df.columns[0]] + list(additional_columns_table2.keys()) + df.columns[3:23].tolist()
                 table2 = table2[new_order_table2]
-                print(f"Debug Tabelle 2 (messung_z): {new_order_table2}")
-                print(table2.head())
-                exit(0)
 
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 3 == messung_i_u

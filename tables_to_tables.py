@@ -1,6 +1,5 @@
 import pandas as pd
 import pathlib
-import csv
 
 # Globale Variablen für die Startwerte der IDs
 mess_id_t = 1
@@ -27,7 +26,6 @@ def increment_ids():
     mess_id_i_u += 1
     messreihe_id += 1
 
-
 def table_to_tables():
     dir = '/home/kilian/Documents/Python_Project/CSV'
 
@@ -36,71 +34,68 @@ def table_to_tables():
         if 'TEMP' in p[-1]:
             with open(path, 'r') as csvfile:
                 # Lade CSV Datei
-                df = pd.read_csv(path, delimiter=';')
-                print(df.columns[0])
+                df = pd.read_csv(path)
+                print(df.columns[1])
                 exit(0)
 
-                first_line = csvfile.readline().strip()
-                header = first_line.split(',')
-
-                 # Hole die aktuellen IDs
+                # Hole die aktuellen IDs
                 ids = get_current_ids()
 
                 # Definiere zusätzliche Spalten
                 additional_columns_table1 = {
-                    'mess_id_t' : ids['mess_id_t'],
-                    'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
+                    'mess_id_t': ids['mess_id_t'],
+                    'stab_id': int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id': 3,
-                    'messreihe_id' : ids['messreihe_id']
+                    'messreihe_id': ids['messreihe_id']
                 }
 
                 additional_columns_table2 = {
-                    'mess_id_z' : ids['mess_id_z'],
-                    'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
+                    'mess_id_z': ids['mess_id_z'],
+                    'stab_id': int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id': 1,
-                    'messreihe_id' : ids['messreihe_id']
+                    'messreihe_id': ids['messreihe_id']
                 }
 
-                additional_columns_table3 ={
-                    'mess_id_i_u' : ids['mess_id_i_u'],
-                    'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
+                additional_columns_table3 = {
+                    'mess_id_i_u': ids['mess_id_i_u'],
+                    'stab_id': int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id': 2,
-                    'messreihe_id' : ids['messreihe_id']
+                    'messreihe_id': ids['messreihe_id']
                 }
 
-                
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 1 == messung_t
-                columns_table1 = [header[0], header[1]]
+                columns_table1 = [df.columns[0], df.columns[1]]
 
                 # Initialisiere Tabelle 1 mit den vorhandenen Daten aus den CSV Spalten
                 table1 = df[columns_table1].copy()
-                print(table1)
-
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table1.items():
                     table1[col] = value
-                
-                # Spaltenreihenfolge für Tabelle 3 anpassen
-                new_order_table1 = [header[0]] + list(additional_columns_table1.keys()) + [header[1]]
+
+                # Spaltenreihenfolge für Tabelle 1 anpassen
+                new_order_table1 = [df.columns[0]] + list(additional_columns_table1.keys()) + [df.columns[1]]
                 table1 = table1[new_order_table1]
+
+                # Debug-Ausgabe für Tabelle 1
                 print(f"Debug Tabelle 1 (messung_t): {new_order_table1}")
                 print(table1.head())
-                exit(0)
 
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 2 == messung_z
-                columns_table2 = ['timestamp'] + header[3:24]
-        
+                columns_table2 = [df.columns[0], df.columns[3]]
+
                 # Initialisiere Tabelle 2 mit den vorhandenen Daten aus den CSV Spalten
                 table2 = df[columns_table2].copy()
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table2.items():
                     table2[col] = value
-                
-                # Spaltenreihe  nfolge für Tabelle 2 anpassen
-                new_order_table2 = ['timestamp'] + list(additional_columns_table2.keys()) + header[3:23]
+
+                # Spaltenreihenfolge für Tabelle 2 anpassen
+                new_order_table2 = [df.columns[0]] + list(additional_columns_table2.keys()) + [df.columns[3]]
                 table2 = table2[new_order_table2]
+
+                # Debug-Ausgabe für Tabelle 2
                 print(f"Debug Tabelle 2 (messung_z): {new_order_table2}")
                 print(table2.head())
                 exit(0)
@@ -108,7 +103,7 @@ def table_to_tables():
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 3 == messung_i_u
                 columns_table3 = [df.columns[0], df.columns[2]]
-        
+
                 # Initialisiere Tabelle 3 mit den vorhandenen Daten aus den CSV Spalten
                 table3 = df[columns_table3].copy()
                 # Hinzufügen der zusätzlichen Spalten
@@ -118,7 +113,11 @@ def table_to_tables():
                 # Spaltenreihenfolge für Tabelle 3 anpassen
                 new_order_table3 = [df.columns[0]] + list(additional_columns_table3.keys()) + [df.columns[2]]
                 table3 = table3[new_order_table3]
-                
+
+                # Debug-Ausgabe für Tabelle 3
+                print(f"Debug Tabelle 3 (messung_i_u): {new_order_table3}")
+                print(table3.head())
+
                 stab_id = int(p[-1].split('_')[4].replace('.csv', ''))
                 # Speichern der modifizierten Tabelle
                 output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_t.csv'
@@ -126,12 +125,10 @@ def table_to_tables():
                 output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_i_u.csv'
                 table1.to_csv(output_path_table1, index=False)
                 table2.to_csv(output_path_table2, index=False)
-                table3.to_csv(output_path_table3, index=False) 
+                table3.to_csv(output_path_table3, index=False)
 
                 # Inkrementiere die IDs für die nächste CSV-Datei
                 increment_ids()
-
-
 
 # Hauptprogramm ausführen
 if __name__ == "__main__":
