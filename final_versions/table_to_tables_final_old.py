@@ -131,7 +131,7 @@ def table_to_tables():
                     'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id' : 3,
                     'messreihe_id' : [ids['messreihe_id']],
-                    'temperatur' : [None],
+                    'temperatur' : [False],
                     'deleted' : [False]
                 })
 
