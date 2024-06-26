@@ -113,14 +113,17 @@ def table_to_tables():
                 
                 stab_id = int(p[-1].split('_')[4].replace('.csv', ''))
 
+                # Abfrage der Bemerkung von der Konsole
+                bemerkung = input(f"Geben Sie eine Bemerkung für {p[-1]} ein:")
+
                 # Initialisiere Tabelle 'messreihe'
                 messreihe = pd.DataFrame({
                     'messreihe_id' : [ids['messreihe_id']],
                     'stab_id' : [stab_id],
-                    'bemerkung' : [''],
-                    'mess_id_i_u' : [None],
-                    'mess_id_t' : [None],
-                    'mess_id_z' : [None],
+                    'bemerkung' : [bemerkung],
+                    'mess_id_i_u' : [False],
+                    'mess_id_t' : [False],
+                    'mess_id_z' : [False],
                     'deleted' : [False]
                 })
 
@@ -142,8 +145,8 @@ def table_to_tables():
                     'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id' : 2,
                     'messreihe_id' : [ids['messreihe_id']],
-                    'i' : [None],
-                    'u' : [None],
+                    'i' : [False],
+                    'u' : [False],
                     'deleted' : [False]
                 })
 

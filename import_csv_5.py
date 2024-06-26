@@ -2,6 +2,7 @@ import pymysql
 import pandas as pd
 import pathlib
 
+
 class MariaDBImporter:
     def __init__(self, host, user, password, database, port):
         self.host = host
@@ -88,6 +89,8 @@ def main():
     importer = MariaDBImporter(host="141.57.28.240", user="python", password="dreyertech", database="test", port=3306)
     importer.connect()
 
+    messreihe_id = 6
+
     dir = '/home/kilian/Documents/Python_Project/tables'
     messreihe_files = []
     init_files = []
@@ -101,18 +104,21 @@ def main():
             init_files.append(file_name)
         else:
             data_files.append(file_name)
+    # print(data_files)
+    # exit(0)
 
     # Import messreihe files
     for file in messreihe_files:
         importer.import_csv_to_table(file, "messreihe")
 
-    # Import init files and extract IDs
+        # Import init files and extract IDs
     last_ids = importer.extract_ids_and_import_init_files(init_files)
-
-    # Update messreihe with the last seen IDs
-    messreihe_id = 1  # Dies muss dynamisch gehandhabt werden, abhängig von Ihrer Anwendung
+        # print(last_ids)
+        # Update messreihe with the last seen IDs
     importer.update_messreihe(messreihe_id, last_ids['mess_id_t'], last_ids['mess_id_z'], last_ids['mess_id_i_u'])
+    messreihe_id += 1
 
+    exit(0)
     # Import data files
     for file in data_files:
         table_name = 'messung_t' if '_t' in file else 'messung_z' if '_z' in file else 'messung_i_u'
