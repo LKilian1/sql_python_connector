@@ -100,7 +100,7 @@ def main():
     # Importieren der generierten CSV-Dateien in die entsprechenden Tabellen
     for path in pathlib.Path(dir).rglob('*.csv'):
         print(path)
-        exit(0)
+        exit(0) # Label für die init Einträge und den Label für die eigentlichen Daten vergleichen und sicherstellen, dass zu keinen verwechslung bei der einlesung kommt
         if 'stab' in str(path):
             if '_t' in str(path):
                 importer.import_csv_to_table(str(path), "messung_t")

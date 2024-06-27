@@ -160,10 +160,10 @@ def table_to_tables():
                 })
 
                 # Speichern der modifizierten Tabelle
-                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_t.csv'
-                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_z.csv'
-                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_i_u.csv'
-                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/{p[-2]}_stab_{stab_id}_messreihe_{messreihe_id}.csv'
+                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_t.csv'
+                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_z.csv'
+                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_i_u.csv'
+                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/mr_{p[-2]}_stab_{stab_id}_messreihe_{messreihe_id}.csv'
                 output_path_init_messung_t = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_t.csv'
                 output_path_init_messung_z = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_z.csv'
                 output_path_init_messung_i_u = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_i_u.csv'

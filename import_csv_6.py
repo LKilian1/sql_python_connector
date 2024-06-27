@@ -65,14 +65,19 @@ class MariaDBImporter:
         except Exception as e:
             print(f"Failed to update messreihe: {e}")
 
-    def extract_ids_and_import_init_files(self, init_files):
-    # Wörterbuch zur Speicherung der letzten IDs jeder Kategorie
+    def extract_ids_and_import_init_files(self, init_files, current_messreihe_file):
+    # Extrahieren der stab_id oder einer ähnlichen Kennung aus dem aktuellen messreihe_file
+        stab_id = extract_stab_id(current_messreihe_file)  # Implementiere diese Funktion entsprechend deiner Dateinamenstruktur
+    
         last_ids = {'mess_id_t': None, 'mess_id_z': None, 'mess_id_i_u': None}
     
-        for file in init_files:
+    # Filtere init_files basierend auf stab_id
+        relevant_files = [f for f in init_files if f"stab_{stab_id}" in f]
+
+        for file in relevant_files:
             data = pd.read_csv(file)
             if '_t' in file:
-                last_ids['mess_id_t'] = data['mess_id_t'].iloc[-1]  # Annahme, dass die ID in der Spalte 'mess_id_t' steht
+                last_ids['mess_id_t'] = data['mess_id_t'].iloc[-1]
                 table_name = 'messung_t'
             elif '_z' in file:
                 last_ids['mess_id_z'] = data['mess_id_z'].iloc[-1]
@@ -83,7 +88,8 @@ class MariaDBImporter:
         
             self.import_csv_to_table(file, table_name)
 
-        return last_ids    
+        return last_ids
+    
 
 def main():
     importer = MariaDBImporter(host="141.57.28.240", user="python", password="dreyertech", database="test", port=3306)
@@ -92,6 +98,10 @@ def main():
     messreihe_id = 6
 
     dir = '/home/kilian/Documents/Python_Project/tables'
+    for path in pathlib.Path(dir).rglob('*.csv'):
+        p = str(path).split('/')
+        print(p[-1].split('_')[3])
+    exit(0)
     messreihe_files = []
     init_files = []
     data_files = []
@@ -110,7 +120,7 @@ def main():
     # Import messreihe files
     for file in messreihe_files:
         importer.import_csv_to_table(file, "messreihe")
-        last_ids = importer.extract_ids_and_import_init_files(init_files)
+        last_ids = importer.extract_ids_and_import_init_files(init_files, file)
         importer.update_messreihe(messreihe_id, last_ids['mess_id_t'], last_ids['mess_id_z'], last_ids['mess_id_i_u'])
         messreihe_id += 1
 

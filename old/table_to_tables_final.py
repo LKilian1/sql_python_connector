@@ -37,8 +37,6 @@ def table_to_tables():
             with open(path, 'r') as csvfile:
                 # Lade CSV Datei
                 df = pd.read_csv(path, delimiter=';')
-                print(df.columns[0])
-                exit(0)
 
                 first_line = csvfile.readline().strip()
                 header = first_line.split(',')
