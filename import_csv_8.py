@@ -43,46 +43,9 @@ class MariaDBImporter:
             print(f"Data from {csv_file} has been imported into {table_name}")
         except Exception as e:
             print(f"Failed to import data: {e}")
-    
 
-    def update_messreihe_table(self, last_ids):
-        try:
-            cursor = self.connection.cursor()
-            sql = "SELECT messreihe_id FROM messreihe ORDER BY messreihe_id;"
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-        
-        # Anfangs-IDs setzen
-            current_mess_id_t = last_ids['mess_id_t']
-            current_mess_id_z = last_ids['mess_id_z']
-            current_mess_id_i_u = last_ids['mess_id_i_u']
-        
-            for row in rows:
-                messreihe_id = row[0]
-            
-            # Update the current row with the current mess_ids
-                update_sql = """
-                UPDATE messreihe SET
-                mess_id_t = %s,
-                mess_id_z = %s,
-                mess_id_i_u = %s
-                WHERE messreihe_id = %s;
-                """
-                cursor.execute(update_sql, (current_mess_id_t, current_mess_id_z, current_mess_id_i_u, messreihe_id))
-            
-            # Inkrementieren der mess_ids für die nächste Zeile
-                current_mess_id_t += 1
-                current_mess_id_z += 1
-                current_mess_id_i_u += 1
-        
-            self.connection.commit()
-            print("messreihe table updated successfully with incremented mess_ids.")
-        except Exception as e:
-            print(f"Failed to update messreihe: {e}")
-
-    
     def extract_ids_and_import_init_files(self, init_files):
-    # Wörterbuch zur Speicherung der letzten IDs jeder Kategorie
+        # Wörterbuch zur Speicherung der letzten IDs jeder Kategorie
         last_ids = {'mess_id_t': None, 'mess_id_z': None, 'mess_id_i_u': None}
     
         for file in init_files:
@@ -99,8 +62,42 @@ class MariaDBImporter:
         
             self.import_csv_to_table(file, table_name)
 
-        return last_ids    
+        return last_ids
 
+    def update_messreihe_table(self, last_ids):
+        try:
+            cursor = self.connection.cursor()
+            sql = "SELECT messreihe_id FROM messreihe ORDER BY messreihe_id;"
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+        
+            # Anfangs-IDs setzen
+            current_mess_id_t = last_ids['mess_id_t']
+            current_mess_id_z = last_ids['mess_id_z']
+            current_mess_id_i_u = last_ids['mess_id_i_u']
+        
+            for row in rows:
+                messreihe_id = row[0]
+            
+                # Update the current row with the current mess_ids
+                update_sql = """
+                UPDATE messreihe SET
+                mess_id_t = %s,
+                mess_id_z = %s,
+                mess_id_i_u = %s
+                WHERE messreihe_id = %s;
+                """
+                cursor.execute(update_sql, (current_mess_id_t, current_mess_id_z, current_mess_id_i_u, messreihe_id))
+            
+                # Inkrementieren der mess_ids für die nächste Zeile
+                current_mess_id_t += 1
+                current_mess_id_z += 1
+                current_mess_id_i_u += 1
+        
+            self.connection.commit()
+            print("messreihe table updated successfully with incremented mess_ids.")
+        except Exception as e:
+            print(f"Failed to update messreihe: {e}")
 
     def close_connection(self):
         if self.connection:
@@ -129,17 +126,16 @@ def main():
     for file in messreihe_files:
         importer.import_csv_to_table(file, "messreihe")
 
-    # Import init files
-    for file in init_files:
-        table_name = 'messung_t' if '_t' in file else 'messung_z' if '_z' in file else 'messung_i_u'
-        importer.import_csv_to_table(file, table_name)
-    
+    # Extract last_ids and import init files
     last_ids = importer.extract_ids_and_import_init_files(init_files)
 
+    # Update messreihe table with the extracted last_ids
     importer.update_messreihe_table(last_ids)
 
-    # Optional: Update messreihe if needed
-    # Implementieren Sie hier Logik, um die Tabelle 'messreihe' zu aktualisieren, falls erforderlich.
+    # Optional: Import data files if needed
+    # for file in data_files:
+    #     table_name = 'messung_t' if '_t' in file else 'messung_z' if '_z' in file else 'messung_i_u'
+    #     importer.import_csv_to_table(file, table_name)
 
     importer.close_connection()
 

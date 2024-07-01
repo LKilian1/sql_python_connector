@@ -106,11 +106,11 @@ def main():
             data_files.append(file_name)
     # print(messreihe_files)
     # exit(0)
+    last_ids = importer.extract_ids_and_import_init_files(init_files)
 
     # Import messreihe files
     for file in messreihe_files:
         importer.import_csv_to_table(file, "messreihe")
-        last_ids = importer.extract_ids_and_import_init_files(init_files)
         importer.update_messreihe(messreihe_id, last_ids['mess_id_t'], last_ids['mess_id_z'], last_ids['mess_id_i_u'])
         messreihe_id += 1
 
