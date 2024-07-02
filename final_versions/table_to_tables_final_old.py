@@ -1,6 +1,7 @@
 import pandas as pd
 import pathlib
 import csv
+import time 
 
 # Globale Variablen für die Startwerte der IDs
 mess_id_t = 1
@@ -114,13 +115,13 @@ def table_to_tables():
                 stab_id = int(p[-1].split('_')[4].replace('.csv', ''))
 
                 # Abfrage der Bemerkung von der Konsole
-                bemerkung = input(f"Geben Sie eine Bemerkung für {p[-1]} ein:")
+                #bemerkung = input(f"Geben Sie eine Bemerkung für {p[-1]} ein:")
 
                 # Initialisiere Tabelle 'messreihe'
                 messreihe = pd.DataFrame({
                     'messreihe_id' : [ids['messreihe_id']],
                     'stab_id' : [stab_id],
-                    'bemerkung' : [bemerkung],
+                    'bemerkung' : ['Temperierung'],
                     'mess_id_i_u' : [False],
                     'mess_id_t' : [False],
                     'mess_id_z' : [False],
@@ -159,14 +160,16 @@ def table_to_tables():
                     'deleted' : [False]
                 })
 
+                unique_time = int(time.time() * 1000) + ids['mess_id_z']
+
                 # Speichern der modifizierten Tabelle
-                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_t.csv'
-                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_z.csv'
-                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_i_u.csv'
-                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/mr_{p[-2]}_stab_{stab_id}_messreihe_{messreihe_id}.csv'
-                output_path_init_messung_t = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_t.csv'
-                output_path_init_messung_z = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_z.csv'
-                output_path_init_messung_i_u = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_i_u.csv'
+                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_t_{unique_time}.csv'
+                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_z_{unique_time}.csv'
+                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_i_u_{unique_time}.csv'
+                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/mr_{p[-2]}_stab_{stab_id}_messreihe_{messreihe_id}_{unique_time}.csv'
+                output_path_init_messung_t = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_id_t_{unique_time}.csv'
+                output_path_init_messung_z = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_id_z_{unique_time}.csv'
+                output_path_init_messung_i_u = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_i_u_{unique_time}.csv'
                 table1.to_csv(output_path_table1, index=False)
                 table2.to_csv(output_path_table2, index=False)
                 table3.to_csv(output_path_table3, index=False)

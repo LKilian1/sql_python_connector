@@ -3,11 +3,12 @@ import pathlib
 
 # CSV Header modifizieren
 def process_csv_files():
-    dir = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023/TEMP_025_50V'
+    dir = '/home/kilian/Seafile/RELAXO/MESSUNGEN/Impedanzspektroskopie/September2023'
 
     for path in pathlib.Path(dir).rglob('*.csv'):
         p = str(path).split('/')
         if 'TEMP' in p[-2]:
+            print(f"Processing folder: {p[-2]}")
             with open(path, 'r') as csvfile:
                 first_line = csvfile.readline().strip()
             
@@ -33,7 +34,7 @@ def process_csv_files():
             df.insert(0, 'timestamp', timestamps)
             df.insert(1, 'temperatur', temperatur)
             df.insert(2, 'u', u)
-            print(df.columns)
+            #print(df.columns)
 
             # Speichern der modifizierten Tabellenheaders
             output_path = f"/home/kilian/Documents/Python_Project/CSV/{p[-2]}_stab_{stab_id}.csv"
