@@ -7,7 +7,7 @@ import time
 mess_id_t = 1
 mess_id_z = 6
 mess_id_i_u = 1
-messreihe_id = 6
+messreihe_id = 5
 timestamp = 1
 
 def get_current_ids():
@@ -43,6 +43,7 @@ def table_to_tables():
                 # Lade CSV Datei
                 df = pd.read_csv(path)
 
+
                  # Hole die aktuellen IDs
                 ids = get_current_ids()
 
@@ -68,6 +69,11 @@ def table_to_tables():
                     'messreihe_id' : ids['messreihe_id']
                 }
 
+                deleted_column = {
+                    'deleted' : False
+                }
+
+
                 
                 # Definieren der Spaltenzuordnung für die Tabellen
                 # Tabelle 1 == messung_t
@@ -78,9 +84,11 @@ def table_to_tables():
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table1.items():
                     table1[col] = value
-                
+
+                for col, value in deleted_column.items():
+                    table1[col] = value
                 # Spaltenreihenfolge für Tabelle 3 anpassen
-                new_order_table1 = [df.columns[0]] + list(additional_columns_table1.keys()) + [df.columns[1]]
+                new_order_table1 = [df.columns[0]] + list(additional_columns_table1.keys()) + [df.columns[1]] + list(deleted_column.keys())
                 table1 = table1[new_order_table1]
 
                 # Definieren der Spaltenzuordnung für die Tabellen
@@ -94,8 +102,10 @@ def table_to_tables():
                 for col, value in additional_columns_table2.items():
                     table2[col] = value
                 
+                for col, value in deleted_column.items():
+                    table2[col] = value
                 # Spaltenreihe  nfolge für Tabelle 2 anpassen
-                new_order_table2 = [df.columns[0]] + list(additional_columns_table2.keys()) + df.columns[3:23].tolist()
+                new_order_table2 = [df.columns[0]] + list(additional_columns_table2.keys()) + df.columns[3:23].tolist() + list(deleted_column.keys())
                 table2 = table2[new_order_table2]
 
                 # Definieren der Spaltenzuordnung für die Tabellen
@@ -107,9 +117,11 @@ def table_to_tables():
                 # Hinzufügen der zusätzlichen Spalten
                 for col, value in additional_columns_table3.items():
                     table3[col] = value
-
+                
+                for col, value in deleted_column.items():
+                    table3[col] = value
                 # Spaltenreihenfolge für Tabelle 3 anpassen
-                new_order_table3 = [df.columns[0]] + list(additional_columns_table3.keys()) + [df.columns[2]]
+                new_order_table3 = [df.columns[0]] + list(additional_columns_table3.keys()) + [df.columns[2]] + list(deleted_column.keys())
                 table3 = table3[new_order_table3]
                 
                 stab_id = int(p[-1].split('_')[4].replace('.csv', ''))
@@ -163,13 +175,15 @@ def table_to_tables():
                 unique_time = int(time.time() * 1000) + ids['mess_id_z']
 
                 # Speichern der modifizierten Tabelle
-                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_t_{unique_time}.csv'
-                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_z_{unique_time}.csv'
-                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/data_{p[-2]}_stab_{stab_id}_i_u_{unique_time}.csv'
-                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/mr_{p[-2]}_stab_{stab_id}_messreihe_{messreihe_id}_{unique_time}.csv'
-                output_path_init_messung_t = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_id_t_{unique_time}.csv'
-                output_path_init_messung_z = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_id_z_{unique_time}.csv'
-                output_path_init_messung_i_u = f'/home/kilian/Documents/Python_Project/tables/init_{p[-2]}_stab_{stab_id}_i_u_{unique_time}.csv'
+                output_path_table1 = f'/home/kilian/Documents/Python_Project/tables/data_stab_{stab_id}_t_{unique_time}_messreihe_{messreihe_id}.csv'
+                output_path_table2 = f'/home/kilian/Documents/Python_Project/tables/data_stab_{stab_id}_z_{unique_time}_messreihe_{messreihe_id}.csv'
+                output_path_table3 = f'/home/kilian/Documents/Python_Project/tables/data_stab_{stab_id}_i_u_{unique_time}_messreihe_{messreihe_id}.csv'
+                
+                output_path_messreihe = f'/home/kilian/Documents/Python_Project/tables/mr_stab_{stab_id}_{unique_time}_messreihe_{messreihe_id}.csv'
+
+                output_path_init_messung_t = f'/home/kilian/Documents/Python_Project/tables/init_stab_{stab_id}_t_{unique_time}_messreihe_{messreihe_id}.csv'
+                output_path_init_messung_z = f'/home/kilian/Documents/Python_Project/tables/init_stab_{stab_id}_z_{unique_time}_messreihe_{messreihe_id}.csv'
+                output_path_init_messung_i_u = f'/home/kilian/Documents/Python_Project/tables/init_stab_{stab_id}_i_u_{unique_time}_messreihe_{messreihe_id}.csv'
                 table1.to_csv(output_path_table1, index=False)
                 table2.to_csv(output_path_table2, index=False)
                 table3.to_csv(output_path_table3, index=False)
