@@ -5,7 +5,7 @@ import time
 
 # Globale Variablen für die Startwerte der IDs
 mess_id_t = 1
-mess_id_z = 6
+mess_id_z = 5
 mess_id_i_u = 1
 messreihe_id = 5
 timestamp = 1
@@ -43,7 +43,6 @@ def table_to_tables():
                 # Lade CSV Datei
                 df = pd.read_csv(path)
 
-
                  # Hole die aktuellen IDs
                 ids = get_current_ids()
 
@@ -66,7 +65,8 @@ def table_to_tables():
                     'mess_id_i_u' : ids['mess_id_i_u'],
                     'stab_id' : int(p[-1].split('_')[4].removesuffix('.csv')),
                     'messgeraet_id': 2,
-                    'messreihe_id' : ids['messreihe_id']
+                    'messreihe_id' : ids['messreihe_id'],
+                    'i' : 0
                 }
 
                 deleted_column = {
@@ -133,12 +133,13 @@ def table_to_tables():
                 messreihe = pd.DataFrame({
                     'messreihe_id' : [ids['messreihe_id']],
                     'stab_id' : [stab_id],
-                    'bemerkung' : ['Temperierung'],
-                    'mess_id_i_u' : [False],
-                    'mess_id_t' : [False],
-                    'mess_id_z' : [False],
+                    'bemerkung' : ['Temperierung_2023'],
+                    'mess_id_i_u' : [None],
+                    'mess_id_t' : [None],
+                    'mess_id_z' : [None],
                     'deleted' : [False]
                 })
+
 
                 #Initialisiere Init-Einträge für die Messergebnisstabellen
                 init_messung_t = pd.DataFrame({
@@ -187,7 +188,7 @@ def table_to_tables():
                 table1.to_csv(output_path_table1, index=False)
                 table2.to_csv(output_path_table2, index=False)
                 table3.to_csv(output_path_table3, index=False)
-                messreihe.to_csv(output_path_messreihe, index=False) 
+                messreihe.to_csv(output_path_messreihe, index=False, na_rep='') 
                 init_messung_t.to_csv(output_path_init_messung_t, index=False)
                 init_messung_z.to_csv(output_path_init_messung_z, index=False)
                 init_messung_i_u.to_csv(output_path_init_messung_i_u, index=False)

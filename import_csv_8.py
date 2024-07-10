@@ -59,8 +59,13 @@ class MariaDBImporter:
             elif '_i_u' in file:
                 last_ids['mess_id_i_u'] = data['mess_id_i_u'].iloc[-1]
                 table_name = 'messung_i_u'
-        
+
+            print(f"Importing {file} into {table_name}")
+            print(f"Last IDs before import: mess_id_t={last_ids.get('mess_id_t', 'N/A')}, mess_id_z={last_ids.get('mess_id_z', 'N/A')}, mess_id_i_u={last_ids.get('mess_id_i_u', 'N/A')}")
+
             self.import_csv_to_table(file, table_name)
+
+            #print(f"Last IDs after import from {file}: mess_id_t={last_ids.get('mess_id_t', 'N/A')}, mess_id_z={last_ids.get('mess_id_z', 'N/A')}, mess_id_i_u={last_ids.get('mess_id_i_u', 'N/A')}")
 
         return last_ids
 
@@ -75,6 +80,9 @@ class MariaDBImporter:
             current_mess_id_t = last_ids['mess_id_t']
             current_mess_id_z = last_ids['mess_id_z']
             current_mess_id_i_u = last_ids['mess_id_i_u']
+
+            print(f"Initial IDs for update: {last_ids}")
+            exit(0)
         
             for row in rows:
                 messreihe_id = row[0]
@@ -128,6 +136,9 @@ def main():
 
     # Extract last_ids and import init files
     last_ids = importer.extract_ids_and_import_init_files(init_files)
+
+    # Print the last_ids to see the extracted values
+    print(f"Extracted IDs after importing init files: {last_ids}")
 
     # Update messreihe table with the extracted last_ids
     importer.update_messreihe_table(last_ids)
