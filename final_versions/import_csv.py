@@ -145,7 +145,7 @@ class MariaDBImporter:
 
 # Beispielhafte Nutzung der Klasse
 if __name__ == "__main__":
-    importer = MariaDBImporter(host='141.57.28.240', user='python', password='dreyertech', database='temporary', port=3306)
+    importer = MariaDBImporter(host='141.57.28.240', user='python', password='dreyertech', database='relaxo', port=3306)
     importer.connect()
     importer.import_data('//home/kilian/Documents/Python_Project/tables')
 
